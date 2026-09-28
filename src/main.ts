@@ -1,14 +1,27 @@
-import { CRMController } from "./controllers/crm.controller";
-import type { Usuario } from "./models/interfaces";
+import {CRMController} from './controllers/crm.controller';
 
-const miEscuelaCRM = new CRMController();
+// Instanciamos el motor (creamos el objeto en memoria)
+const miEscuelaCRM = new CRMController("1.0.0");
 
-//Usamos los metodos
 
-const profesores = miEscuelaCRM.filtrarUsuariosPorRol('profesor');
+ async function addUsuario() {
+    console.log("Agregando un nuevo usuario...");
+    let guardaConExito =  false;
+    guardaConExito = await miEscuelaCRM.registrarUsuarioAsync({ id: 4, nombre: "Ana Torres", rol: "alumno", activo: true });
+    if (guardaConExito) {
+        console.log("Usuario agregado con éxito.");
+    } else {
+        console.log("Error al agregar el usuario.");
+    }
+}
 
-// Llamamos al metodo agregarUsuario para agregar un nuevo usuario
+addUsuario();
 
-const nuevoUsuario: Usuario = { id: 7, nombre: "María García", rol: "profesor", activo: true };
-miEscuelaCRM.agregarUsuario(nuevoUsuario);
-console.log('Profesores:', profesores);
+console.log("Versión del CRM:", miEscuelaCRM.verVersion());
+// Usamos sus métodos
+const profesores = miEscuelaCRM.filtrarUsuariosPorRol("profesor");
+
+
+console.log("Profesores del centro:", profesores);
+
+miEscuelaCRM.agregarUsuario({ id:7, nombre: "Carlos Ruiz", rol: "profesor", activo: true });
