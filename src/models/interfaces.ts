@@ -7,3 +7,12 @@ export interface Usuario {
     activo: boolean;
     tieneCoche?: string; // Almacenar marca del coche
 }
+
+export interface Sancion {
+  id: string;
+  alumnoId: string;
+  profesorId: string;
+  tipo: 'comportamiento' | 'expulsion';
+  descripcion: string;
+  fecha: string;
+}

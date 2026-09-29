@@ -15,6 +15,27 @@ const miEscuelaCRM = new CRMController("1.0.0");
     }
 }
 
+async function testRegistrarSancion() {
+  try {
+    console.log('Iniciando proceso de sanción...');
+
+    // Esperamos la operación asíncrona del CRM
+    await miEscuelaCRM.registrarSancionAsync(
+      '3', // ID del alumno (ej: Carlos García)
+      '2', // ID del profesor (ej: María López)
+      'comportamiento',
+      'Interrumpir reiteradamente la explicación en clase.'
+    );
+
+    console.log('Operación asíncrona completada con éxito.');
+  } catch (error) {
+    console.error('Ocurrió un error al registrar la sanción:', error);
+  }
+}
+
+// Ejecutamos la prueba
+testRegistrarSancion();
+
 addUsuario();
 
 console.log("Versión del CRM:", miEscuelaCRM.verVersion());
