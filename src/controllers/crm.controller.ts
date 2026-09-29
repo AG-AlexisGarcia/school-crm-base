@@ -4,6 +4,7 @@ import type { Sancion } from "../models/interfaces";
 export class CRMController {
   // Propiedades
   private usuariosDelCentro: Usuario[] = [];
+  private sancionesDelCentro: Sancion[] = [];
   private readonly CLAVE_STORAGE = "school-crm-usuarios";
   private readonly CLAVE_SANCIONES = "school_crm_sanciones"; // 👈 Clave solicitada
 
@@ -18,7 +19,13 @@ export class CRMController {
         { id: 3, nombre: "Carlos García", rol: "alumno", activo: true },
       ];
     }
+
+    const sancionesLocales = localStorage.getItem(this.CLAVE_SANCIONES);
+    if (sancionesLocales) {
+      this.sancionesDelCentro = JSON.parse(sancionesLocales);
+    }
   }
+  
 
   public registrarUsuarioAsync(usuario: Usuario): Promise<boolean> {
     return new Promise((resolve) => {
@@ -36,10 +43,8 @@ export class CRMController {
         };
 
         this.usuariosDelCentro.push(nuevoUsuario);
-        localStorage.setItem(
-          this.CLAVE_STORAGE,
-          JSON.stringify(this.usuariosDelCentro),
-        );
+        this.guardarEnDisco(); // Guardamos los cambios en localStorage
+        
 
         // La operación ha terminado con éxito: resolvemos la promesa
         resolve(true);
@@ -76,8 +81,7 @@ export class CRMController {
 
         // Añadimos y guardamos en LocalStorage
         listaSanciones.push(nuevaSancion);
-        localStorage.setItem(this.CLAVE_SANCIONES, JSON.stringify(listaSanciones));
-
+        this.guardarEnDisco(); // Guardamos las sanciones actualizadas en localStorage
         console.log(`✅ Sanción registrada en ${this.CLAVE_SANCIONES}:`, nuevaSancion);
 
         // Resolvemos la promesa sin devolver valor (Promise<void>)
@@ -86,12 +90,15 @@ export class CRMController {
     });
   }
 
-  // Métodos: La función de ayer, que estaba en counter, convertida en un método o habilidad de la clase
-  filtrarUsuariosPorRol(rolBuscado: Rol): Usuario[] {
-    // Usamos this para referirnos a la propiedad de esta misma clase
-    return this.usuariosDelCentro.filter(
-      (usuario) => usuario.rol === rolBuscado,
-    );
+  // Métodos: El mismo método , devuelve la lista de usuarios como promesa, con un retardo de 2 segundos para simular la llamada a un servidor remoto.
+  filtrarUsuariosPorRol(rolBuscado: Rol): Promise<Usuario[]> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(this.usuariosDelCentro.filter(
+          (usuario) => usuario.rol === rolBuscado,
+        ));
+      }, 2000);
+    });
   }
 
   actualizaVersion(nuevaVersion: string): void {
@@ -121,11 +128,26 @@ export class CRMController {
     console.log(`✅ Usuario ${nuevoUsuario.nombre} añadido correctamente.`);
     this.guardarEnDisco(); // Guardamos los cambios en localStorage
   }
+  //metodo llamado leerTodosAsync que devuelva una promesa que resuelva con todos los usuarios del centro con un retardo de 2 segundos (simulando una llamada a un servidor remoto). El método debe ser público y devolver una promesa que resuelva con un array de usuarios.
+  public leerTodosAsync(): Promise<Usuario[]> {
+    return new Promise((resolve) => {
+      console.log("[NETWORK]: Conectando con el servidor escolar para leer todos los usuarios...");
+      setTimeout(() => {
+      resolve(this.usuariosDelCentro);
+      }, 2000);
+    });
+  }
 
+  // Método privado para guardar en localStorage
   private guardarEnDisco(): void {
     localStorage.setItem(
       this.CLAVE_STORAGE,
       JSON.stringify(this.usuariosDelCentro),
+    );
+    // Guardamos también las sanciones en localStorage
+    localStorage.setItem(
+      this.CLAVE_SANCIONES,
+      JSON.stringify(this.sancionesDelCentro),
     );
   }
 }
