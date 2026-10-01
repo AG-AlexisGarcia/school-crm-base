@@ -1,8 +1,9 @@
-import type { Asistencia, Sancion, RegistroHorario, EstadoAsistencia, TipoSancion } from '../models/interfaces';
+import type { Asistencia, Sancion, RegistroHorario, EstadoAsistencia, TipoSancion, FranjaHoraria } from '../models/interfaces';
 import { StorageService } from '../services/storage.service';
 
-
-
+const esperar = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 export class CRMController {
     // Inicialización de los almacenes persistentes
@@ -13,7 +14,15 @@ export class CRMController {
     /**
      * Registra una falta, retraso o asistencia en el sistema de forma asíncrona.
      */
-    public async registrarAsistencia(alumnoId: string, profesorId: string, franja: string, estado: EstadoAsistencia): Promise<boolean> {
+    public async registrarAsistencia(alumnoId: string, profesorId: string, franja: FranjaHoraria, estado: EstadoAsistencia): Promise<boolean> {
+      const nuevaAsistencia: Asistencia = {
+        id: crypto.randomUUID(),
+        alumnoId, 
+        profesorId,
+        franja,
+        estado,
+        fecha: new Date().toISOString().split('T')[0],
+      };
 
         // TODO: El alumno debe implementar la simulación de retraso de red (setTimeout con Promise)
 
